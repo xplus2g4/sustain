@@ -32,3 +32,15 @@ Decisions for Sustain in [MADR 4.0](https://adr.github.io/madr/) format; the pro
 | [0026](0026-activate-test-hook-and-happy-dom-tests.md) | activate() test hook and happy-dom DOM tests | accepted | 2026-10-11 |
 | [0027](0027-navigation-and-watching-details.md) | Navigation and watching details | accepted | 2026-10-11 |
 | [0028](0028-package-with-vsce-without-license-or-repository.md) | Package with vsce, without LICENSE or repository metadata | accepted | 2026-10-11 |
+| [0029](0029-learning-modes-in-one-agent-session.md) | Learning modes run in one agent session in the user's repository | accepted | 2026-10-14 |
+| [0030](0030-session-state-machine-as-bundled-scripts.md) | Session state machine as bundled scripts, not an MCP server | accepted | 2026-10-14 |
+| [0031](0031-mutation-engine-seeds-the-bugs.md) | A mutation engine seeds the bugs; the agent only chooses where | accepted | 2026-10-14 |
+| [0032](0032-hunt-phase-enforcement-via-devin-hooks.md) | Hunt-phase enforcement via Devin lifecycle hooks | accepted | 2026-10-14 |
+| [0033](0033-session-lifecycle-lock-pause-abandon-complete.md) | Session lifecycle: lock, pause, resume, abandon, complete | accepted | 2026-10-14 |
+| [0034](0034-sustain-folder-layout-and-session-state-files.md) | .sustain run-folder layout and session state files | accepted | 2026-10-14 |
+| [0035](0035-mode-verification-hints-and-scoring.md) | Mode verification contracts, hints and scoring | accepted | 2026-10-14 |
+| [0036](0036-session-install-skills-and-managed-hooks.md) | Session install: skills into .agents, managed hooks per agent config | accepted | 2026-10-14 |
+| [0037](0037-session-command-contract-and-scoring.md) | session.mjs v1 command contract, phases and scoring weights | accepted | 2026-10-14 |
+| [0038](0038-mutation-engine-v1-rule-tables.md) | Mutation engine v1: three kinds as ordered rewrite tables on one line | accepted | 2026-10-14 |
+| [0039](0039-lifecycle-commands-and-hook-contract.md) | Lifecycle command contract and the session-hook wire format | accepted | 2026-10-14 |
+| [0040](0040-hooks-merge-panel-read-side-and-devin-detection.md) | Hooks-merge mechanics, session-panel read side and Devin CLI detection | accepted | 2026-10-15 |

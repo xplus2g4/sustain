@@ -1,24 +1,31 @@
-// File operations behind `Sustain: Install Agent Skills` (FR-INS-01, ADR 0006). No `vscode`
-// import, so the symlink fallback is unit-tested in Node.
+// File operations behind `Sustain: Install Agent Skills` (FR-INS-01, ADR 0006; the
+// learning-session install extends the same targets per ADR 0036). No `vscode` import,
+// so the symlink fallback is unit-tested in Node.
 import { cpSync, lstatSync, mkdirSync, rmSync, symlinkSync } from "node:fs";
 import { dirname, join } from "node:path";
 
-export const SKILL_NAME = "sustain-architecture";
-/** Repo-relative locations, `/`-separated (also used in messages). */
-export const AGENTS_SKILL_DIR = `.agents/skills/${SKILL_NAME}`;
-export const CLAUDE_SKILL_LINK = `.claude/skills/${SKILL_NAME}`;
-/** Target of the `.claude` link, relative to the link's folder. */
-export const CLAUDE_LINK_TARGET = `../../.agents/skills/${SKILL_NAME}`;
+/** The skills `Sustain: Install Agent Skills` ships: architecture + the learning session. */
+export const SKILL_NAMES: readonly string[] = ["sustain-architecture", "sustain-bugfix"];
+
+/** Repo-relative `.agents/skills/<name>`, `/`-separated (also used in messages). */
+export function agentsSkillDir(name: string): string {
+  return `.agents/skills/${name}`;
+}
+
+/** Repo-relative `.claude/skills/<name>` — the Claude-side entry (symlink or copy). */
+export function claudeSkillLink(name: string): string {
+  return `.claude/skills/${name}`;
+}
 
 export interface SkillTargets {
   agentsDir: string;
   claudeLink: string;
 }
 
-export function skillTargets(root: string): SkillTargets {
+export function skillTargets(root: string, name: string): SkillTargets {
   return {
-    agentsDir: join(root, ...AGENTS_SKILL_DIR.split("/")),
-    claudeLink: join(root, ...CLAUDE_SKILL_LINK.split("/")),
+    agentsDir: join(root, ...agentsSkillDir(name).split("/")),
+    claudeLink: join(root, ...claudeSkillLink(name).split("/")),
   };
 }
 
@@ -41,13 +48,13 @@ export type LinkFn = (target: string, path: string, type: "dir" | "junction") =>
  * `.agents` folder and links the `.claude` entry to it; copies there too when `link` throws.
  * Returns how the `.claude` entry was created.
  */
-export function writeSkill(source: string, targets: SkillTargets, link: LinkFn = symlinkSync): "symlink" | "copy" {
+export function writeSkill(source: string, targets: SkillTargets, name: string, link: LinkFn = symlinkSync): "symlink" | "copy" {
   rmSync(targets.agentsDir, { recursive: true, force: true });
   rmSync(targets.claudeLink, { recursive: true, force: true });
   cpSync(source, targets.agentsDir, { recursive: true });
   mkdirSync(dirname(targets.claudeLink), { recursive: true });
   try {
-    link(CLAUDE_LINK_TARGET, targets.claudeLink, process.platform === "win32" ? "junction" : "dir");
+    link(`../../.agents/skills/${name}`, targets.claudeLink, process.platform === "win32" ? "junction" : "dir");
     return "symlink";
   } catch {
     rmSync(targets.claudeLink, { recursive: true, force: true });

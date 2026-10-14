@@ -17,17 +17,30 @@ const common = {
   legalComments: "inline",
 };
 
+/** The script entry points, emitted as `<name>.mjs`. @type {Record<string, string>} */
+const SCRIPT_ENTRIES = {
+  "repo-facts": "src/agent/repo-facts.ts",
+  validate: "src/agent/validate.ts",
+  session: "src/agent/session.ts",
+  "session-hook": "src/agent/session-hook.ts",
+};
+
 /**
  * The skill scripts: ESM for Node ≥ 18 with every dependency inlined (ADR 0007).
  * @param {string} outdir
+ * @param {string[]} [names] which entries to build; default all (used by the test setup,
+ *   which stages every script side by side in out/test-scripts/)
  */
-export async function buildScripts(outdir) {
+export async function buildScripts(outdir, names = Object.keys(SCRIPT_ENTRIES)) {
   await esbuild.build({
     ...common,
-    entryPoints: {
-      "repo-facts": join(root, "src/agent/repo-facts.ts"),
-      validate: join(root, "src/agent/validate.ts"),
-    },
+    entryPoints: Object.fromEntries(
+      names.map((name) => {
+        const entry = SCRIPT_ENTRIES[name];
+        if (entry === undefined) throw new Error(`buildScripts: unknown script entry ${name}`);
+        return [name, join(root, entry)];
+      }),
+    ),
     outdir,
     outExtension: { ".js": ".mjs" },
     platform: "node",
@@ -41,7 +54,8 @@ async function buildDist() {
 
   // Static skill files (SKILL.md, agents/, references/) ship as-is.
   cpSync(join(root, "skills"), join(dist, "skills"), { recursive: true });
-  await buildScripts(join(dist, "skills/sustain-architecture/scripts"));
+  await buildScripts(join(dist, "skills/sustain-architecture/scripts"), ["repo-facts", "validate"]);
+  await buildScripts(join(dist, "skills/sustain-bugfix/scripts"), ["session", "session-hook"]);
 
   await esbuild.build({
     ...common,
@@ -53,7 +67,8 @@ async function buildDist() {
     external: ["vscode"],
   });
 
-  // The webview: one IIFE (elkjs included) loaded by nonce under a strict CSP (NFR-SEC-01).
+  // The webviews: one IIFE each (the diagram one includes elkjs) loaded by nonce under a
+  // strict CSP (NFR-SEC-01).
   await esbuild.build({
     ...common,
     entryPoints: [join(root, "webview/main.ts")],
@@ -63,7 +78,17 @@ async function buildDist() {
     target: "es2022",
     minify: true,
   });
+  await esbuild.build({
+    ...common,
+    entryPoints: [join(root, "webview/session.ts")],
+    outfile: join(dist, "session-webview.js"),
+    platform: "browser",
+    format: "iife",
+    target: "es2022",
+    minify: true,
+  });
   cpSync(join(root, "webview/styles.css"), join(dist, "webview.css"));
+  cpSync(join(root, "webview/session.css"), join(dist, "session-webview.css"));
 }
 
 async function buildE2e() {

@@ -8,6 +8,8 @@ export const DRAFT_FILE = "draft.json";
 export const CANDIDATE_FILE = "candidate.json";
 /** Longest run-folder slug. */
 export const SLUG_MAX = 40;
+/** `<prefix>-<slug>-<YYYYMMDD-HHMMSS>[-N]` — the generic run-folder name shape. */
+export const RUN_NAME_PATTERN = /^([a-z0-9]+)-(.+)-(\d{8}-\d{6})(?:-(\d+))?$/;
 /** `architecture-<slug>-<YYYYMMDD-HHMMSS>[-N]` */
 export const RUN_FOLDER_PATTERN = /^architecture-(.+)-(\d{8}-\d{6})(?:-(\d+))?$/;
 
@@ -47,6 +49,22 @@ export function runTimestamp(date: Date): string {
   );
 }
 
+export interface RunName {
+  /** The run-folder prefix (`architecture`, a session mode, …); `[a-z0-9]+`, never a `-`. */
+  prefix: string;
+  slug: string;
+  /** `YYYYMMDD-HHMMSS` */
+  timestamp: string;
+  /** Collision suffix `N` of `-N`, 1 when absent. */
+  n: number;
+}
+
+export function parseRunName(name: string): RunName | null {
+  const match = RUN_NAME_PATTERN.exec(name);
+  if (!match) return null;
+  return { prefix: match[1]!, slug: match[2]!, timestamp: match[3]!, n: match[4] === undefined ? 1 : Number(match[4]) };
+}
+
 export interface RunFolderName {
   slug: string;
   /** `YYYYMMDD-HHMMSS` */
@@ -55,40 +73,55 @@ export interface RunFolderName {
   n: number;
 }
 
+/** The `architecture-…` specialisation of {@link parseRunName} for `.archify` runs. */
 export function parseRunFolderName(name: string): RunFolderName | null {
-  const match = RUN_FOLDER_PATTERN.exec(name);
-  if (!match) return null;
-  return { slug: match[1]!, timestamp: match[2]!, n: match[3] === undefined ? 1 : Number(match[3]) };
+  const parsed = parseRunName(name);
+  if (parsed === null || parsed.prefix !== "architecture") return null;
+  return { slug: parsed.slug, timestamp: parsed.timestamp, n: parsed.n };
 }
 
 function isInside(parentReal: string, childReal: string): boolean {
   return childReal.startsWith(parentReal.endsWith(sep) ? parentReal : parentReal + sep);
 }
 
+export interface RunFolderOptions {
+  /** Directory under the root that holds run folders; default {@link ARCHIFY_DIR}. */
+  dir?: string;
+  /**
+   * Run-name prefix for `<prefix>-<slug>-<timestamp>`, one `[a-z0-9]+` segment so the name
+   * stays unambiguous; default `architecture`. Session runs pass the mode here (ADR 0034).
+   */
+  prefix?: string;
+}
+
 /**
- * Creates `<root>/.archify/` if needed and a fresh `architecture-<slug>-<timestamp>` folder
- * in it, appending `-2`, `-3`, … when the name is taken. Returns the folder name. Throws
- * when `.archify` is not a folder inside the root or the name is not one path segment.
+ * Creates `<root>/<dir>/` if needed and a fresh `<prefix>-<slug>-<timestamp>` folder in it,
+ * appending `-2`, `-3`, … when the name is taken. Returns the folder name. Throws when the
+ * base directory is not a folder inside the root or the name is not one path segment.
  */
-export function createRunFolder(root: string, slug: string, timestamp: string): string {
-  const base = `architecture-${slug}-${timestamp}`;
-  if (!parseRunFolderName(base) || /[/\\]/.test(base)) throw new Error(`"${base}" is not a valid run folder name`);
-  const archify = join(root, ARCHIFY_DIR);
-  mkdirSync(archify, { recursive: true });
-  const archifyReal = realpathSync(archify);
-  if (!isInside(realpathSync(root), archifyReal) || !statSync(archifyReal).isDirectory()) {
-    throw new Error(`${ARCHIFY_DIR} must be a folder inside the repository root`);
+export function createRunFolder(root: string, slug: string, timestamp: string, options: RunFolderOptions = {}): string {
+  const dir = options.dir ?? ARCHIFY_DIR;
+  const prefix = options.prefix ?? "architecture";
+  if (dir === "." || dir === ".." || /[/\\]/.test(dir)) throw new Error(`"${dir}" is not a valid run folder directory`);
+  if (!/^[a-z0-9]+$/.test(prefix)) throw new Error(`"${prefix}" is not a valid run folder prefix`);
+  const base = `${prefix}-${slug}-${timestamp}`;
+  if (!parseRunName(base) || /[/\\]/.test(base)) throw new Error(`"${base}" is not a valid run folder name`);
+  const parent = join(root, dir);
+  mkdirSync(parent, { recursive: true });
+  const parentReal = realpathSync(parent);
+  if (!isInside(realpathSync(root), parentReal) || !statSync(parentReal).isDirectory()) {
+    throw new Error(`${dir} must be a folder inside the repository root`);
   }
   for (let n = 1; n <= MAX_COLLISIONS; n += 1) {
     const name = n === 1 ? base : `${base}-${n}`;
     try {
-      mkdirSync(join(archifyReal, name));
+      mkdirSync(join(parentReal, name));
       return name;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
     }
   }
-  throw new Error(`can't create ${ARCHIFY_DIR}/${base}: too many folders with that name`);
+  throw new Error(`can't create ${dir}/${base}: too many folders with that name`);
 }
 
 export interface DraftLocation {

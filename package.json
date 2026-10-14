@@ -2,7 +2,7 @@
   "name": "sustain",
   "displayName": "Sustain",
   "description": "View a repository's architecture as an Archify diagram and open the code behind each node.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "sustain",
   "private": true,
   "engines": {
@@ -36,6 +36,11 @@
       {
         "command": "sustain.openArchitectureFile",
         "title": "Open Architecture File…",
+        "category": "Sustain"
+      },
+      {
+        "command": "sustain.startLearning",
+        "title": "Start Learning Session",
         "category": "Sustain"
       }
     ]

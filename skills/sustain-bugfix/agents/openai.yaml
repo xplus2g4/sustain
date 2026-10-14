@@ -1,0 +1,5 @@
+interface:
+  display_name: "Sustain Bug Hunt"
+  short_description: "Run a Sustain bug-hunt learning session"
+policy:
+  allow_implicit_invocation: false

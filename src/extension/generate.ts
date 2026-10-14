@@ -6,14 +6,14 @@ import * as vscode from "vscode";
 import { agentPrompt, AGENTS, findOnPath } from "./agents";
 import { pickRepoRoot } from "./folders";
 import { installSkill } from "./install";
-import { AGENTS_SKILL_DIR } from "./skillFiles";
+import { agentsSkillDir } from "./skillFiles";
 
 export async function generateArchitectureCommand(extensionUri: vscode.Uri): Promise<void> {
   const folder = await pickRepoRoot();
   if (!folder) return;
   const root = folder.uri.fsPath;
 
-  if (!existsSync(join(root, ...AGENTS_SKILL_DIR.split("/"), "SKILL.md"))) {
+  if (!existsSync(join(root, ...agentsSkillDir("sustain-architecture").split("/"), "SKILL.md"))) {
     const choice = await vscode.window.showInformationMessage("Install the sustain-architecture skill first?", "Install", "Cancel");
     if (choice !== "Install") return;
     if ((await installSkill(extensionUri, root)) === "cancelled") return;
