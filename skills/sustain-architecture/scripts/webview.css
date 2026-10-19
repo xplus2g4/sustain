@@ -1,0 +1,392 @@
+/* Architecture webview (FR-VIEW-05..07). Colours come only from VS Code theme variables. */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--vscode-editor-background);
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.app {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* Canvas */
+
+.canvas {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  font-family: var(--vscode-font-family);
+}
+
+.canvas--panning {
+  cursor: grabbing;
+}
+
+.app--empty .canvas,
+.app--empty .toolbar {
+  display: none;
+}
+
+/* Toolbar */
+
+.toolbar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--vscode-editorWidget-background);
+  border: 1px solid var(--vscode-editorWidget-border, var(--vscode-panel-border));
+  border-radius: 4px;
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow);
+}
+
+.toolbar__button {
+  min-width: 28px;
+  height: 24px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 3px;
+  background: none;
+  color: var(--vscode-foreground);
+  font: inherit;
+  cursor: pointer;
+}
+
+.toolbar__button:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.toolbar__button:active {
+  background: var(--vscode-toolbar-activeBackground, var(--vscode-toolbar-hoverBackground));
+}
+
+.toolbar__button:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* Empty state */
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  color: var(--vscode-descriptionForeground);
+  text-align: center;
+  white-space: pre-wrap;
+}
+
+/* Boundaries */
+
+.boundary__box {
+  fill: none;
+  stroke: var(--vscode-panel-border);
+  stroke-width: 1.25px;
+  stroke-dasharray: 6 4;
+}
+
+.boundary__label {
+  fill: var(--vscode-descriptionForeground);
+  font-weight: 600;
+}
+
+.boundary--security-group .boundary__box {
+  stroke: var(--vscode-charts-red);
+}
+
+.boundary--security-group .boundary__label {
+  fill: var(--vscode-charts-red);
+}
+
+/* Edges */
+
+.edge {
+  --edge-color: var(--vscode-foreground);
+}
+
+.edge__line {
+  fill: none;
+  stroke: var(--edge-color);
+  stroke-width: 1.25px;
+  stroke-linejoin: round;
+}
+
+.edge__head {
+  fill: var(--edge-color);
+}
+
+.edge--emphasis {
+  --edge-color: var(--vscode-focusBorder);
+}
+
+.edge--emphasis .edge__line {
+  stroke-width: 2.5px;
+}
+
+.edge--security {
+  --edge-color: var(--vscode-charts-red);
+}
+
+.edge--security .edge__line {
+  stroke-width: 1.5px;
+}
+
+.edge--dashed .edge__line {
+  stroke-dasharray: 6 4;
+}
+
+.edge-label {
+  fill: var(--vscode-foreground);
+  stroke: var(--vscode-editor-background);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+
+/* Nodes */
+
+.node {
+  --node-color: var(--vscode-descriptionForeground);
+}
+
+.node--frontend {
+  --node-color: var(--vscode-charts-blue);
+}
+
+.node--backend {
+  --node-color: var(--vscode-charts-green);
+}
+
+.node--database {
+  --node-color: var(--vscode-charts-purple);
+}
+
+.node--cloud {
+  --node-color: var(--vscode-charts-yellow);
+}
+
+.node--security {
+  --node-color: var(--vscode-charts-red);
+}
+
+.node--messagebus {
+  --node-color: var(--vscode-charts-orange);
+}
+
+.node--external {
+  --node-color: var(--vscode-descriptionForeground);
+}
+
+/* FR-VIEW-05: fill = type colour at 12 % opacity. */
+.node__box {
+  fill: color-mix(in srgb, var(--node-color) 12%, transparent);
+  stroke: var(--node-color);
+  stroke-width: 1.5px;
+}
+
+.node__label {
+  fill: var(--vscode-foreground);
+  font-weight: bold;
+}
+
+.node__sublabel {
+  fill: var(--vscode-descriptionForeground);
+}
+
+.node__tag-badge {
+  fill: color-mix(in srgb, var(--node-color) 22%, var(--vscode-editor-background));
+}
+
+.node__tag {
+  fill: var(--node-color);
+}
+
+/* Tooltip */
+
+.tooltip {
+  position: fixed;
+  z-index: 10;
+  max-width: 480px;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  background: var(--vscode-editorHoverWidget-background);
+  color: var(--vscode-editorHoverWidget-foreground);
+  border: 1px solid var(--vscode-editorHoverWidget-border);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow);
+  line-height: 1.4;
+}
+
+.tooltip__label {
+  font-weight: bold;
+}
+
+.tooltip__sublabel,
+.tooltip__type {
+  color: var(--vscode-descriptionForeground);
+}
+
+.tooltip__sources {
+  margin: 6px 0 0;
+  padding: 6px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--vscode-editorHoverWidget-border);
+}
+
+.tooltip__source {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  width: 100%;
+  padding: 1px 0;
+  border: none;
+  background: none;
+  color: var(--vscode-textLink-foreground);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tooltip__source:hover .tooltip__path {
+  color: var(--vscode-textLink-activeForeground);
+  text-decoration: underline;
+}
+
+.tooltip__source:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+}
+
+.tooltip__path {
+  font-family: var(--vscode-editor-font-family);
+  overflow-wrap: anywhere;
+}
+
+.tooltip__source-label {
+  color: var(--vscode-descriptionForeground);
+}
+
+/* Source pane (browser viewer only; the element does not exist in the VS Code webview) */
+
+.source-pane {
+  display: flex;
+  flex-direction: column;
+  width: min(420px, 40%);
+  border-left: 1px solid var(--vscode-panel-border);
+  background: var(--vscode-editor-background);
+  overflow: hidden;
+}
+
+.source-pane__header {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.source-pane__title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.source-pane__path {
+  font-family: var(--vscode-editor-font-family);
+  overflow-wrap: anywhere;
+}
+
+.source-pane__label {
+  color: var(--vscode-descriptionForeground);
+}
+
+.source-pane__close {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: none;
+  color: var(--vscode-foreground);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.source-pane__close:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.source-pane__close:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+}
+
+.source-pane__warning,
+.source-pane__error {
+  padding: 6px 10px;
+  font-size: 0.92em;
+}
+
+.source-pane__warning {
+  color: var(--vscode-editorWarning-foreground, var(--vscode-charts-yellow));
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.source-pane__error {
+  color: var(--vscode-errorForeground);
+}
+
+.source-pane__lines {
+  flex: 1;
+  overflow: auto;
+  padding: 6px 0;
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--vscode-editor-font-size, 0.92em);
+  line-height: 1.45;
+}
+
+.source-pane__line {
+  display: flex;
+  white-space: pre;
+}
+
+.source-pane__line--cited {
+  background: var(--vscode-editor-rangeHighlightBackground);
+}
+
+.source-pane__num {
+  flex: none;
+  width: 3.2em;
+  padding: 0 10px 0 6px;
+  color: var(--vscode-editorLineNumber-foreground, var(--vscode-descriptionForeground));
+  text-align: right;
+  user-select: none;
+}
+
+.source-pane__code {
+  padding-right: 10px;
+}

@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "bugs": [
+    {
+      "id": "bug-1",
+      "step": 0,
+      "file": "src/browser/snapshot.ts",
+      "region": {
+        "startLine": 68,
+        "endLine": 68
+      },
+      "kind": "off-by-one",
+      "buggyHunk": "  for (let n = first; n < last; n += 1) lines.push({ n, text: all[n - 1] ?? \"\" });",
+      "twins": 0,
+      "found": true,
+      "fixed": true,
+      "hints": []
+    },
+    {
+      "id": "bug-2",
+      "step": 1,
+      "file": "webview/sourcePane.ts",
+      "region": {
+        "startLine": 59,
+        "endLine": 59
+      },
+      "kind": "flipped-comparison",
+      "buggyHunk": "        const cited = source.cited === undefined && n >= source.cited[0] && n <= source.cited[1];",
+      "twins": 0,
+      "found": true,
+      "fixed": true,
+      "hints": []
+    },
+    {
+      "id": "bug-3",
+      "step": 2,
+      "file": "webview/browser.ts",
+      "region": {
+        "startLine": 116,
+        "endLine": 116
+      },
+      "kind": "missing-await",
+      "buggyHunk": "    loaded = data.load();",
+      "twins": 0,
+      "found": true,
+      "fixed": true,
+      "hints": [
+        1
+      ]
+    },
+    {
+      "id": "bug-4",
+      "step": 3,
+      "file": "src/browser/export.ts",
+      "region": {
+        "startLine": 57,
+        "endLine": 57
+      },
+      "kind": "flipped-comparison",
+      "buggyHunk": "  const errors = Object.values(snapshot.sources).filter((source) => source.kind !== \"error\").length;",
+      "twins": 0,
+      "found": true,
+      "fixed": true,
+      "hints": [
+        1
+      ]
+    }
+  ]
+}

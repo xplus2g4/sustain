@@ -59,6 +59,20 @@ with `<draft>` replaced by the `draft` path from step 2. It prints one JSON obje
 - You may repair at most 3 times (4 validator runs in total). After the 4th rejection, stop and report the remaining errors and the draft path.
 - Exit code 2 means the command itself was wrong (message on stderr): fix the command, not the draft.
 
-## 7. Report
+## 7. Open the diagram
 
-On `accepted`, report the `candidate` path and the number of components, and tell the user that the Sustain viewer will offer to open the new diagram.
+Run, from the repository root:
+
+```sh
+node .agents/skills/sustain-architecture/scripts/export-viewer.mjs <candidate>
+```
+
+with `<candidate>` replaced by the `candidate` path the validator reported. The script prints one JSON object with `page`: a self-contained HTML page that embeds the diagram and the cited code, written under the system temp dir.
+
+- On the user's machine (a desktop agent), run `open "<page>"` on macOS or `xdg-open "<page>"` on Linux so the diagram opens next to this conversation.
+- In a remote or headless environment, skip the open and report the `page` path instead.
+- If `scripts/export-viewer.mjs` does not exist, the skill is an older install — skip this step.
+
+## 8. Report
+
+On `accepted`, report the `candidate` path, the number of components, and the `page` path from step 7 with whether you opened it. In VS Code the Sustain viewer will also offer to open the new diagram.

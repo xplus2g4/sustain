@@ -19,6 +19,7 @@ body {
 
 .app {
   position: relative;
+  display: flex;
   width: 100%;
   height: 100%;
 }
@@ -27,7 +28,8 @@ body {
 
 .canvas {
   display: block;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: 100%;
   cursor: grab;
   user-select: none;
@@ -285,4 +287,106 @@ body {
 
 .tooltip__source-label {
   color: var(--vscode-descriptionForeground);
+}
+
+/* Source pane (browser viewer only; the element does not exist in the VS Code webview) */
+
+.source-pane {
+  display: flex;
+  flex-direction: column;
+  width: min(420px, 40%);
+  border-left: 1px solid var(--vscode-panel-border);
+  background: var(--vscode-editor-background);
+  overflow: hidden;
+}
+
+.source-pane__header {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.source-pane__title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.source-pane__path {
+  font-family: var(--vscode-editor-font-family);
+  overflow-wrap: anywhere;
+}
+
+.source-pane__label {
+  color: var(--vscode-descriptionForeground);
+}
+
+.source-pane__close {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: none;
+  color: var(--vscode-foreground);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.source-pane__close:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.source-pane__close:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+}
+
+.source-pane__warning,
+.source-pane__error {
+  padding: 6px 10px;
+  font-size: 0.92em;
+}
+
+.source-pane__warning {
+  color: var(--vscode-editorWarning-foreground, var(--vscode-charts-yellow));
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.source-pane__error {
+  color: var(--vscode-errorForeground);
+}
+
+.source-pane__lines {
+  flex: 1;
+  overflow: auto;
+  padding: 6px 0;
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--vscode-editor-font-size, 0.92em);
+  line-height: 1.45;
+}
+
+.source-pane__line {
+  display: flex;
+  white-space: pre;
+}
+
+.source-pane__line--cited {
+  background: var(--vscode-editor-rangeHighlightBackground);
+}
+
+.source-pane__num {
+  flex: none;
+  width: 3.2em;
+  padding: 0 10px 0 6px;
+  color: var(--vscode-editorLineNumber-foreground, var(--vscode-descriptionForeground));
+  text-align: right;
+  user-select: none;
+}
+
+.source-pane__code {
+  padding-right: 10px;
 }

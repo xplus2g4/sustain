@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "mode": "bugfix",
+  "phase": "done",
+  "stepIndex": 4,
+  "steps": [
+    {
+      "title": "Snapshot builder: resolve candidate.json citations into embedded line windows",
+      "files": [
+        "src/browser/snapshot.ts"
+      ]
+    },
+    {
+      "title": "Source pane: numbered code view with cited-range highlight and stale/error states",
+      "files": [
+        "webview/sourcePane.ts",
+        "webview/styles.css"
+      ]
+    },
+    {
+      "title": "Browser entry: embedded snapshot provider wiring clicks to the pane",
+      "files": [
+        "webview/browser.ts"
+      ]
+    },
+    {
+      "title": "Export CLI + HTML shell: self-contained page written to temp dir",
+      "files": [
+        "src/browser/html.ts",
+        "src/browser/export.ts",
+        "esbuild.mjs",
+        "package.json"
+      ]
+    }
+  ],
+  "bugs": 4,
+  "found": 4,
+  "fixed": 4,
+  "score": 40,
+  "createdAt": "2026-10-19T01:49:32.983Z",
+  "updatedAt": "2026-10-19T04:24:47.568Z"
+}

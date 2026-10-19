@@ -27,6 +27,7 @@ export async function buildScripts(outdir) {
     entryPoints: {
       "repo-facts": join(root, "src/agent/repo-facts.ts"),
       validate: join(root, "src/agent/validate.ts"),
+      "export-viewer": join(root, "src/browser/export.ts"),
     },
     outdir,
     outExtension: { ".js": ".mjs" },
@@ -39,9 +40,9 @@ export async function buildScripts(outdir) {
 async function buildDist() {
   rmSync(dist, { recursive: true, force: true });
 
-  // Static skill files (SKILL.md, agents/, references/) ship as-is.
-  cpSync(join(root, "skills"), join(dist, "skills"), { recursive: true });
-  await buildScripts(join(dist, "skills/sustain-architecture/scripts"));
+  // Static skill files (SKILL.md, agents/, references/) ship as-is. The scripts are built
+  // into the committed tree too, so the folder can be fetched directly (e.g. npx degit).
+  await buildScripts(join(root, "skills/sustain-architecture/scripts"));
 
   await esbuild.build({
     ...common,
@@ -53,17 +54,33 @@ async function buildDist() {
     external: ["vscode"],
   });
 
-  // The webview: one IIFE (elkjs included) loaded by nonce under a strict CSP (NFR-SEC-01).
+  // The webviews: one IIFE each (elkjs included). main.ts runs under the panel's strict
+  // CSP (NFR-SEC-01); browser.ts is inlined into the self-contained snapshot page.
   await esbuild.build({
     ...common,
-    entryPoints: [join(root, "webview/main.ts")],
-    outfile: join(dist, "webview.js"),
+    entryPoints: {
+      webview: join(root, "webview/main.ts"),
+      "browser-viewer": join(root, "webview/browser.ts"),
+    },
+    outdir: dist,
     platform: "browser",
     format: "iife",
     target: "es2022",
     minify: true,
   });
   cpSync(join(root, "webview/styles.css"), join(dist, "webview.css"));
+
+  // The skill ships the standalone viewer too, so `sustain-architecture` can end with the
+  // page open beside the chat (SKILL.md step 7). The same files sit at the dist root.
+  const skillScripts = join(root, "skills/sustain-architecture/scripts");
+  cpSync(join(dist, "browser-viewer.js"), join(skillScripts, "browser-viewer.js"));
+  cpSync(join(root, "webview/styles.css"), join(skillScripts, "webview.css"));
+  for (const name of ["export-viewer.mjs", "browser-viewer.js", "webview.css"]) {
+    cpSync(join(skillScripts, name), join(dist, name));
+  }
+
+  // Static skill files ship as-is; copied last so dist/skills gets the generated files too.
+  cpSync(join(root, "skills"), join(dist, "skills"), { recursive: true });
 }
 
 async function buildE2e() {
