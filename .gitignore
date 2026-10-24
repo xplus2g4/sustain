@@ -14,3 +14,4 @@ out/
 release/
 research/change-collection/
 .scratch/
+.DS_Store

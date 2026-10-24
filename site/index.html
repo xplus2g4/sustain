@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f9f4">
+  <meta name="description" content="AI SUS makes code-linked architecture maps you can verify, refresh, and bring into code review.">
+  <title>AI SUS — Understand the code behind the map</title>
+  <link rel="icon" href="assets/ai-sus-favicon.png?v=2" type="image/png">
+  <link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/refinement.css">
+  <script src="assets/site.js" defer></script>
+</head>
+<body class="home-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner wrap">
+      <a class="brand brand-wordmark" href="index.html" aria-label="AI SUS home"><img src="assets/ai-sus-wordmark.png" alt="AI SUS"></a>
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <a href="features.html">Features</a>
+        <a href="get-started.html">Get Started</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="https://github.com/xplus2g4/sustain">GitHub <span aria-hidden="true">↗</span></a>
+      </nav>
+      <a class="header-cloud" href="#cloud">Try AI SUS Cloud for Free <span aria-hidden="true">↗</span></a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open navigation"><span></span><span></span></button>
+    </div>
+    <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile navigation" hidden>
+      <a href="features.html">Features</a><a href="get-started.html">Get Started</a><a href="pricing.html">Pricing</a><a href="https://github.com/xplus2g4/sustain">GitHub ↗</a><a href="#cloud">Try AI SUS Cloud for Free ↗</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-grid">
+        <h1 id="hero-title">Understand unfamiliar code through a map you can verify and keep current.</h1>
+        <div class="hero-aside">
+          <p>AI SUS maps a repository with the coding agent you already use. Open a box to inspect cited code, see what changed, and bring that context into review.</p>
+          <div class="hero-actions"><a class="button button-dark" href="get-started.html">Get Started <span aria-hidden="true">→</span></a><a class="text-link" href="#map-demo">Explore the map <span aria-hidden="true">↓</span></a></div>
+        </div>
+      </div>
+    </section>
+    <section class="demo-section" aria-label="Explore a AI SUS map">
+      <div class="wrap">
+      <div id="map-demo" class="demo-frame" aria-label="Interactive AI SUS map demonstration">
+        <div class="demo-toolbar"><span class="demo-path">checkout-demo / architecture.sir</span><div class="demo-toolbar-right"><span class="live-mark"><i></i> INTERACTIVE EXAMPLE</span><span class="demo-version">main · 3f2a91c</span></div></div>
+        <div class="demo-content">
+          <div class="demo-map">
+            <div class="map-meta"><span>CHECKOUT FLOW</span><span>4 COMPONENTS · 4 CITATIONS</span></div>
+            <svg class="map-lines" viewBox="0 0 660 360" preserveAspectRatio="none" aria-hidden="true"><path d="M212 179 H314 V85 H388"/><path d="M212 179 H314 V263 H388"/><path d="M490 116 V217"/></svg>
+            <button class="map-node node-checkout is-selected" type="button" data-node="checkout" aria-pressed="true"><span class="node-kicker">ENTRYPOINT <span class="node-state">FRESH</span></span><strong>Checkout API</strong><small>src/checkout/route.ts <span>↗</span></small></button>
+            <button class="map-node node-pricing" type="button" data-node="pricing" aria-pressed="false"><span class="node-kicker">SERVICE <span class="node-state">FRESH</span></span><strong>Pricing</strong><small>src/pricing/quote.ts <span>↗</span></small></button>
+            <button class="map-node node-payment" type="button" data-node="payment" aria-pressed="false"><span class="node-kicker">SERVICE <span class="node-state">FRESH</span></span><strong>Payments</strong><small>src/payments/charge.ts <span>↗</span></small></button>
+            <button class="map-node node-order" type="button" data-node="order" aria-pressed="false"><span class="node-kicker">STATE <span class="node-state">FRESH</span></span><strong>Orders</strong><small>src/orders/store.ts <span>↗</span></small></button>
+            <div class="map-prompt">Click a box to inspect its source <span aria-hidden="true">↗</span></div>
+          </div>
+          <div class="demo-inspector">
+            <div class="inspector-tabs"><span class="active">SOURCE</span><span>DETAILS</span><span class="inspector-expand" aria-hidden="true">↗</span></div>
+            <div class="inspector-body"><a class="file-path" id="demo-file" href="demo/src/checkout/route.ts">src/checkout/route.ts <span>19–24 ↗</span></a><h2 id="demo-title">Checkout API</h2><p id="demo-desc">Receives the cart, asks Pricing for a quote, and starts the payment.</p><div class="inspector-status"><span class="status-dot"></span><span id="demo-status">Citation matches the current code</span></div><pre class="code-block" id="demo-code" aria-label="Selected source code"><code><span class="line-no">19</span> export async function checkout(cart: Cart): Promise&lt;CheckoutResult&gt; {
+<span class="line-no">20</span>   const quote = price(cart);
+<span class="line-no">21</span>   const payment = await charge(quote);
+<span class="line-no">22</span>   const order = await create(payment);
+<span class="line-no">23</span>   return { orderId: order.id, total: quote.total };
+<span class="line-no">24</span> }</code></pre><div class="inspector-foot">Every box points to code you can open.</div></div>
+          </div>
+        </div>
+        <div class="demo-bottom"><span><span class="tiny-square"></span> Map checked against cited code</span><div class="state-switch" role="group" aria-label="Demo code state"><button type="button" class="is-active" data-state="fresh" aria-pressed="true">At creation</button><button type="button" data-state="changed" aria-pressed="false">After a change <span class="change-dot"></span></button></div></div>
+      </div>
+      <div class="demo-caption"><span>Click through the map</span><span>Concept interface using one shareable checkout example</span></div>
+      </div>
+    </section>
+
+    <section class="integrations section-pad" aria-labelledby="integrations-title">
+      <div class="wrap">
+        <div class="section-head"><h2 id="integrations-title">Use the tools you already trust.</h2><p>AI SUS keeps the integration type visible. An editor extension, a coding agent, and a pull request check each play a different part.</p></div>
+        <div class="integration-groups">
+          <div class="integration-group"><div class="group-heading"><h3>Open the map</h3></div><div class="logo-grid"><a class="logo-cell" href="get-started.html#install"><span class="text-monogram" aria-hidden="true">&lt;/&gt;</span><span><strong>Visual Studio Code</strong><small>Extension</small></span></a><a class="logo-cell" href="get-started.html#install"><img src="assets/brands/cursor.svg" alt=""><span><strong>Cursor</strong><small>VSIX extension</small></span></a><a class="logo-cell" href="https://www.jetbrains.com/idea/"><img src="assets/brands/intellijidea.svg" alt=""><span><strong>IntelliJ IDEA</strong><small>Plugin</small></span></a><a class="logo-cell" href="get-started.html#install"><span class="text-monogram" aria-hidden="true">D</span><span><strong>Devin Desktop</strong><small>VSIX extension</small></span></a></div></div>
+          <div class="integration-group"><div class="group-heading"><h3>Generate with an agent</h3></div><div class="logo-grid"><a class="logo-cell" href="get-started.html#generate"><img src="assets/brands/claude.svg" alt=""><span><strong>Claude Code</strong><small>Launches skill</small></span></a><a class="logo-cell" href="get-started.html#generate"><img src="assets/brands/openai.svg" alt=""><span><strong>Codex</strong><small>Launches skill</small></span></a><a class="logo-cell" href="get-started.html#generate"><span class="text-monogram" aria-hidden="true">D</span><span><strong>Devin CLI</strong><small>Launches skill</small></span></a><a class="logo-cell" href="get-started.html#generate"><img src="assets/brands/githubcopilot.svg" alt=""><span><strong>GitHub Copilot</strong><small>Copy prompt</small></span></a><a class="logo-cell" href="get-started.html#generate"><img src="assets/brands/googlegemini.svg" alt=""><span><strong>Gemini CLI</strong><small>Copy prompt</small></span></a><a class="logo-cell" href="get-started.html#generate"><span class="text-monogram" aria-hidden="true">OC</span><span><strong>OpenCode</strong><small>Copy prompt</small></span></a></div></div>
+          <div class="integration-group"><div class="group-heading"><h3>Check every change</h3></div><div class="logo-grid logo-grid-single"><a class="logo-cell" href="features.html#review"><img src="assets/brands/github.svg" alt=""><span><strong>GitHub</strong><small>Action + PR check</small></span></a></div><p class="integration-footnote">Cursor’s agent and Devin Desktop also have a copy prompt path. Product names identify compatibility; they do not imply endorsement.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="story section-pad" aria-labelledby="story-title">
+      <div class="wrap"><div class="section-head section-head-wide"><h2 id="story-title">From first read to the next pull request.</h2></div>
+        <div class="story-row"><div class="story-copy"><h3>See the system. Open the evidence.</h3><p>Each component names the code it describes. Click a box to open its cited lines in your editor, so the map is a way into the repository rather than a picture beside it.</p><a class="text-link" href="features.html#map">Explore code-linked maps <span aria-hidden="true">↗</span></a></div><figure class="story-visual editor-visual"><div class="mock-window-bar"><span>checkout-demo — AI SUS Architecture</span><span>⌕</span></div><div class="mock-editor"><div class="mock-rail"><span>▦</span><span>◇</span><span>≡</span></div><div class="mock-sidebar"><strong>AI SUS</strong><span>▾ Checkout demo</span><small>ARCHITECTURE MAPS</small><span class="selected">◇ checkout-flow.sir</span><span>◇ payment-service.sir</span><small>SOURCE</small><span>▸ src/checkout</span><span>▸ src/pricing</span><span>▸ src/payments</span></div><div class="mock-workspace"><div class="mock-workspace-top">checkout-flow.sir <span>◎ Fresh · 4 boxes</span></div><div class="mini-map"><div class="mini-wire"></div><span class="mini-node a">Checkout API</span><span class="mini-node b">Pricing</span><span class="mini-node c">Payments</span><span class="mini-node d">Orders</span></div><div class="mock-source">src/checkout/route.ts · lines 24–28 <span>Open cited code ↗</span></div></div></div><figcaption>Interface preview · same checkout example throughout</figcaption></figure></div>
+        <div class="story-row reverse"><div class="story-copy"><h3>Know when the map has moved on.</h3><p>AI SUS checks citations against the working copy without another agent run. Refresh focuses on changed code, and comparison makes the new and kept parts visible.</p><a class="text-link" href="features.html#freshness">Explore freshness and refresh <span aria-hidden="true">↗</span></a></div><figure class="story-visual freshness-visual"><div class="mock-window-bar"><span>Changes since 3f2a91c</span><span>↗</span></div><div class="freshness-board"><div class="fresh-top"><strong>What changed since your map?</strong><small>main → feature/tax-rules</small></div><div class="fresh-stat"><span><b>1</b> edited box</span><span><b>2</b> fresh boxes</span><span><b>0</b> missing citations</span></div><div class="fresh-rows"><div><span class="fresh-icon edited">↗</span><span><strong>Pricing</strong><small>src/pricing/quote.ts · cited lines changed</small></span><em>EDITED</em></div><div><span class="fresh-icon">✓</span><span><strong>Checkout API</strong><small>src/checkout/route.ts · citation matches</small></span><em>FRESH</em></div><div><span class="fresh-icon">✓</span><span><strong>Payments</strong><small>src/payments/charge.ts · citation matches</small></span><em>FRESH</em></div></div><div class="fresh-bottom">Refresh only the parts that changed <span>↗</span></div></div><figcaption>Interface preview · cited code checked against the working copy</figcaption></figure></div>
+        <div class="story-row"><div class="story-copy"><h3>Bring architecture into the pull request.</h3><p>A local check compares a diff with the committed map at zero tokens. The GitHub Action can post touched boxes, new candidates, stale citations, and rule violations where your team reviews code.</p><a class="text-link" href="features.html#review">Explore PR checks <span aria-hidden="true">↗</span></a></div><figure class="story-visual review-visual"><div class="mock-window-bar"><span>Pull request #42 · Update pricing rules</span><span>✓</span></div><div class="pr-card"><div class="pr-heading"><span class="pr-avatar">AI</span><span><strong>AI SUS check</strong><small>Architecture review · 2 minutes ago</small></span><span class="pr-pass">PASS</span></div><h4>What this pull request changes</h4><div class="pr-line"><span>↗</span><strong>Pricing</strong><small>touched · map citation changed</small></div><div class="pr-line"><span>→</span><strong>Checkout API → Pricing</strong><small>connection still valid</small></div><div class="pr-summary"><span>0 new box candidates</span><span>0 rule violations</span><span>0 tokens used</span></div><span class="pr-link">Open the full map and diff ↗</span></div><figcaption>Interface preview · check result shown with a pull request</figcaption></figure></div>
+      </div>
+    </section>
+
+    <section class="learning section-pad"><div class="wrap learning-inner"><div><h2>Maps are a starting point for understanding.</h2><p>Follow a guided tour, ask a question grounded in cited code, or practise fixing a bug. AI SUS keeps the learning path close to the repository you are working in.</p><a class="button button-light" href="features.html#learning">See the learning tools <span aria-hidden="true">↗</span></a></div><div class="learning-list"><div><span>01</span><strong>Guided tours</strong><small>Walk through the map in a deliberate order.</small></div><div><span>02</span><strong>Ask about this code</strong><small>Answers point back to files and lines.</small></div><div><span>03</span><strong>Practice sessions</strong><small>Explain back and bug-hunt in the codebase.</small></div></div></div></section>
+
+    <section class="quick-start section-pad"><div class="wrap quick-start-inner"><div><h2>Start local. See the code behind every box.</h2><p>Install AI SUS, choose the agent you already use, and generate a map for one repository or one part of it. The guide walks through editor and agent choices step by step.</p><a class="button button-dark" href="get-started.html">Open the guided Quick Start <span aria-hidden="true">↗</span></a></div><div class="quick-terminal"><div><span class="terminal-dot"></span> AGENT SKILL <span>↗</span></div><pre><code><span># In Claude Code</span>
+/sustain-architecture checkout flow
+
+<span># In Codex</span>
+$sustain-architecture checkout flow</code></pre><p>A focus is optional. AI SUS also offers a guided Generate flow in the editor.</p></div></div></section>
+
+    <section id="cloud" class="cloud-section section-pad"><div class="wrap cloud-inner"><div><h2>Make the map useful beyond your editor.</h2><p>AI SUS Cloud brings map history, PR pages, dashboards, and share links to your team. Source files stay where your team runs AI SUS. Cloud receives maps and check results only when you opt in.</p><div class="cloud-actions"><a class="button button-dark" href="pricing.html#free">Start free with Cloud <span aria-hidden="true">↗</span></a><a class="cloud-plain-link" href="privacy.html">See what gets uploaded <span aria-hidden="true">↗</span></a></div></div><div class="cloud-panel"><h3>Architecture health, across repositories.</h3><div class="cloud-repos"><div><span class="repo-icon">◇</span><span><strong>checkout-platform</strong><small>main · updated 2h ago</small></span><em>Healthy</em></div><div><span class="repo-icon">◇</span><span><strong>customer-api</strong><small>main · updated yesterday</small></span><em>2 changed</em></div><div><span class="repo-icon">◇</span><span><strong>web-client</strong><small>main · updated 3d ago</small></span><em>Healthy</em></div></div><div class="cloud-panel-bottom"><span>PUBLIC MAPS</span><span>PR HISTORY</span><span>SHARE LINKS</span></div><p class="preview-label">Interface preview · sample team data</p></div></div><div class="wrap cloud-footer"><span>Free local use and a free cloud tier.</span><a href="pricing.html">Compare plans ↗</a></div></section>
+  </main>
+  <footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="index.html"><span class="brand-mark"><img src="assets/sustain.svg" alt=""></span><span>AI SUS</span></a><p>A map of the code you can check for yourself.</p></div><div><strong>Explore</strong><a href="features.html">Features</a><a href="get-started.html">Get Started</a><a href="pricing.html">Pricing</a></div><div><strong>Project</strong><a href="https://github.com/xplus2g4/sustain">GitHub ↗</a><a href="privacy.html">Data & privacy</a><a href="index.html#cloud">AI SUS Cloud</a></div><div class="footer-last"><span>Built for developers who read the code they ship.</span><small>Third-party product names and marks belong to their respective owners.</small></div></div></footer>
+</body>
+</html>

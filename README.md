@@ -18,48 +18,17 @@ Generating a map needs Node.js 18 or newer and Claude Code or Codex, installed a
 
 The sidebar's setup checklist names anything missing and offers a fix for each.
 
-### IntelliJ and other JetBrains IDEs
-
-1. Add the skills with `npx skills add xplus2g4/sustain`.
-2. In the repository, run `/sustain-architecture` in Claude Code or `$sustain-architecture` in Codex.
-3. Open the `.html` page the skill writes in `.archify/<run>/`. Each box opens its code in your JetBrains IDE, VS Code, Cursor or GitHub.
-
 ### Skill only
 
 1. Add the skills with `npx skills add xplus2g4/sustain`.
 2. Run `/sustain-architecture payment flow` in Claude Code or `$sustain-architecture payment flow` in Codex. The focus is optional.
-3. Open the `.html` page beside the map in a browser, or open the map in the Sustain extension.
+3. Open the map in the Sustain extension.
 
 ### Claude Code plugin
 
 1. Download `sustain-skills.zip` from the [latest release](https://github.com/xplus2g4/sustain/releases) and unzip it with `unzip sustain-skills.zip -d sustain-skills`.
 2. In Claude Code, run `/plugin marketplace add ./sustain-skills`.
 3. Run `/plugin install sustain@sustain`.
-
-### GitHub Action
-
-1. Commit a map, as [Commit your map](#commit-your-map) describes.
-2. Add `.github/workflows/sustain.yml`.
-
-   ```yaml
-   name: Sustain
-   on: pull_request
-   permissions:
-     contents: read
-     pull-requests: write
-   jobs:
-     check:
-       runs-on: ubuntu-latest
-       steps:
-         - uses: actions/checkout@v5
-           with:
-             fetch-depth: 0
-         - uses: xplus2g4/sustain/action@main
-   ```
-
-3. Open a pull request. Sustain comments with the boxes it touches, the boxes it leaves stale and the code no box covers.
-
-Setting `fail-on: stale,new-box` in the Action's `with:` block fails the check on those findings. Setting `refresh: claude` or `refresh: codex` there updates the map on the pull request's branch when it has new folders or changed boxes. It needs that agent's CLI and API key in the job, the pull request's head checked out, and `contents: write`, and it never runs for a fork. Replace `main` with a release tag to pin a version.
 
 ## Where to find it
 
@@ -74,7 +43,7 @@ Every command is also in the Command Palette under "Sustain".
 | Explorer right-click | Map This Folder with Sustain |
 | Maps list | Open, Refresh, Export page, Create tour and Delete on each map |
 | Pull request | The Sustain check and its comment |
-| **Sustain: Install Agent Skills** | Copies the `sustain-architecture` skill into `.agents/skills/sustain-architecture/` and links `.claude/skills/sustain-architecture` to it (a copy if links are not possible). Asks before overwriting an existing install. |
+| **Sustain: Install Agent Skills** | Installs `sustain-architecture` and `sustain-bugfix` where `sustain.skillScope` says: your home folder by default (`~/.agents/skills/`, nothing added to the repository), or the repository's `.agents/skills/` when the scope is `project`. Each `.claude/skills/<name>` entry links to the `.agents` copy (a copy where links are not possible). Asks before overwriting an existing install. |
 | **Sustain: Generate Architecture** | Asks for an optional focus, then (when the folder already has a diagram) whether to update the latest diagram or regenerate from scratch, then an agent, and starts Claude Code or Codex in a terminal with the skill invocation. Offers to install the skill first if it is missing. If the agent is not on `PATH`, it offers to copy the prompt instead. |
 | **Sustain: Open Architecture** | Opens the newest diagram of the folder in a Sustain Architecture tab, or reveals and reloads its tab if it is already open. |
 
@@ -86,18 +55,12 @@ Diagrams are `.sir` files (Sustain Intermediate Representation, Archify JSON ins
 - Hover a box to see its description and every source it cites.
 - Tab moves through the boxes, and Enter or Space opens a box's code. Each box's accessible name says what it is and which code it opens, and screen readers also get a list of every box and arrow.
 - Drag or scroll to pan. Zoom with Ctrl or ⌘ and scroll, a pinch, the toolbar or the keys `+`, `-`, `0` and `f`.
-- **Export Page** writes the map as one HTML file that opens anywhere.
-- **Ask** in the sidebar answers questions about the map, with links to the lines it cites.
-- **Create tour** in the maps list asks your agent to write a tour for a map, saved beside it as `tour.json`.
-- **Audit Map** asks your agent to check each box against its cited code.
-- **This Box Is Wrong…** on a box saves your note beside the map.
 - **Health** at the top of the sidebar says whether boxes changed since the map, how many changed lines no box covers, whether any import breaks a rule, and which box changes most.
 - **Write Architecture Notes for Agents** puts the map's boxes, arrows and rules into `AGENTS.md`, between Sustain's markers, so coding agents follow the architecture. It writes `CLAUDE.md` too when that file does not import `AGENTS.md`. Your own text stays as it is, and each file shows as a diff first.
 - The sidebar lists the five boxes whose code changed most over the last `sustain.hotspots.days` (90 by default), with their commits, lines changed and number of authors.
-- **Practice** in the sidebar checks your understanding of this branch's or the uncommitted changes. Your agent asks three questions, and grades each answer with a link to the code. The expected answers never reach the sidebar, and the results stay in VS Code's storage for the workspace. Below them, the section lists your finished bug hunts, explain-backs and tours, with their dates.
 - **Rules** in `sustain.config.json` say which boxes may import which. An import that breaks one shows in the Problems panel at its line and in the pull request check; use Suggest rules in the sidebar. Every change to the file shows as a diff first.
 
-1. Run **Sustain: Install Agent Skills** once per repository.
+1. Run **Sustain: Install Agent Skills** once — per repository only when `sustain.skillScope` is `project`.
 2. Run **Sustain: Generate Architecture**, or start the skill yourself in your agent:
    - **Claude Code:** `/sustain-architecture` followed by an optional focus, e.g. `/sustain-architecture payment flow`. Reading, searching and the skill's scripts are pre-approved; Claude Code still asks before writing the diagram file.
    - **Codex:** `$sustain-architecture` followed by an optional focus, e.g. `$sustain-architecture payment flow`.
@@ -105,23 +68,6 @@ Diagrams are `.sir` files (Sustain Intermediate Representation, Archify JSON ins
 4. Sustain notices the new diagram: if a diagram of the same folder is open, the new one opens in a tab next to it in the same editor group; otherwise a notification offers to open it.
 
 Sustain reads only `candidate.sir`. Earlier versions saved `candidate.json`; those runs are no longer shown, and the next update in such a repository regenerates from scratch. If the repository has a skill installed by an earlier version, run **Sustain: Install Agent Skills** again so the agent writes `candidate.sir`.
-
-## Commit your map
-
-Each map lives in its own run folder in `.archify/`, named after its focus and the time it was made. Commit the folder. Teammates and the pull request check read the committed map.
-
-### Updating instead of regenerating
-
-When an accepted diagram with the same focus already exists, the skill updates it instead of drawing a new one. A script compares the commit the previous diagram was drawn at with your working tree (committed, staged and unstaged edits and untracked files) and groups the changed code by the diagram components whose cited files it touches. The agent re-reads only those components and the changed files no component cites, and patches the previous diagram. Everything else keeps its ID, text and citations, so hand edits survive and two diagrams of an unchanged repository are identical.
-
-The skill regenerates from scratch instead, and then gives matching components and connections their previous IDs back, when:
-
-- you choose **Regenerate from scratch** in **Sustain: Generate Architecture**, or start the skill with `--regenerate` before the focus (`/sustain-architecture --regenerate payment flow`, `$sustain-architecture --regenerate`);
-- the previous diagram was updated 5 times in a row, so drift cannot pile up;
-- there is no previous diagram for this focus, no git repository, or the previous commit is unknown or no longer part of the current history (after a rebase or force-push);
-- the previous run started from a working tree with more than 200 uncommitted paths, or the change description would exceed 2 MiB.
-
-Updates miss changes that touch no cited file, such as moving code into new packages; the periodic regeneration catches those.
 
 ## Using the viewer
 
